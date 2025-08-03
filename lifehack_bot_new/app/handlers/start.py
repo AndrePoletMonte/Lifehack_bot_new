@@ -1,10 +1,9 @@
 from aiogram import Router, F
 from aiogram.types import Message
 from aiogram.filters import CommandStart
-
-from keyboards.menu import language_kb
-from database import add_user, update_user_language
-from data.texts import texts
+from app.keyboards.inline import language_keyboard
+from app.database import add_user, update_user_language
+from app.data.texts import texts
 
 router = Router()
 
@@ -13,7 +12,7 @@ async def cmd_start(message: Message):
     await add_user(message.from_user.id)
     await message.answer(
         texts["choose_language"]["en"], 
-        reply_markup=language_kb()
+        reply_markup=language_keyboard()
     )
 
 @router.message(F.text.in_(["English", "Serbian"]))
