@@ -13,7 +13,7 @@ bot = Bot(token=BOT_TOKEN, parse_mode="HTML")
 dp = Dispatcher(storage=MemoryStorage())
 app = FastAPI()
 
-# Подключаем роутеры
+
 dp.include_router(start.router)
 dp.include_router(hacks.router)
 
