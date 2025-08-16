@@ -59,9 +59,17 @@ async def say_hello(message: types.Message):
 async def main():
     pool = await create_db_pool()
     await init_db(pool)
-    dp["db"] = pool  
+    dp["db"] = pool
+
     await bot.delete_webhook(drop_pending_updates=True)
-    await dp.start_polling(bot)
+    await bot.set_webhook(os.getenv("WEBHOOK_URL"))  
+
+    from aiogram.fsm.storage.memory import MemoryStorage
+    storage = MemoryStorage()
+    dp.fsm.storage = storage
+
+    print
+
 
 if __name__ == "__main__":
     asyncio.run(main())
