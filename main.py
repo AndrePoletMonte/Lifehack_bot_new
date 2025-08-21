@@ -1,12 +1,12 @@
 import asyncio
 import logging
 import os
+from aiohttp import web
 from aiogram import Bot, Dispatcher
 from aiogram.enums import ParseMode
 from aiogram.client.default import DefaultBotProperties
+from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application  
 from dotenv import load_dotenv
-from aiohttp import web
-from aiogram.webhook.aiohttp_server import SimpleRequestHandler, setup_application
 
 from handlers.start import router as start_router
 from database import create_tables
@@ -22,15 +22,18 @@ dp = Dispatcher()
 
 dp.include_router(start_router)
 
-async def on_startup(bot: Bot):
+async def on_startup(app: web.Application):
     await create_tables()
     await bot.delete_webhook(drop_pending_updates=True)
+    logging.info("✅ Bot started and tables checked")
 
 def main():
     app = web.Application()
     SimpleRequestHandler(dispatcher=dp, bot=bot).register(app, path=f"/{BOT_TOKEN}")
     setup_application(app, dp, bot=bot)
+    app.on_startup.append(on_startup)
     web.run_app(app, host="0.0.0.0", port=int(os.getenv("PORT", 8080)))
 
 if __name__ == "__main__":
     main()
+
